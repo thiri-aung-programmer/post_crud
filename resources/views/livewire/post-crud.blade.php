@@ -2,35 +2,44 @@
     {{-- Nothing in the world is as soft and yielding as water. --}}
    
     <h1 class="text-2xl font-bold mb-4">Manage Posts</h1>
-
+    @if(session()->has('message'))
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded mb-4">
+            {{ session('message') }}
+        </div>
+    @endif
     {{-- form --}}
-    <form action="" class="space-y-4">
+    <form action="" wire:submit.prevent="{{  $isEdit? 'update':'store' }}" class="space-y-4">
         <div class="block text-sm font-semibold mb-1">
             <label for="">Title</label>
-            <input type="text" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-200">
+            <input type="text" wire:model="title" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-200">
         </div>
         
         <div class="block text-sm font-semibold mb-1">
             <label for="">Title</label>
-            <textarea row="2" name="" id=""class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-200"></textarea>
+            <textarea row="4" wire:model="content" name="" id=""class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-200"></textarea>
         </div>
         <div class="flex items-center gap-2 my-4 justify-end">
-            <button type="submit" class="bg-blue-600 hover:bg-blue-700 rounded text-white px-4 py-2">Create Post</button>
+            <button type="submit" class="bg-blue-600 hover:bg-blue-700 rounded text-white px-4 py-2">{{ $isEdit?"Update Post":"Create Post" }}</button>
              <button type="reset" class="bg-gray-600 hover:bg-gray-700 rounded text-white px-4 py-2">Cancel</button>
         </div>
 
     </form>
     <div class="mt-8">
         <h2 class="text-lg font-semibold mb-3"><i class="bi bi-pencil-square me-3"></i>All Posts</h2>
+        @forelse($posts as $post)
         <div class="border border-gray-200 rounded mb-4 shadow-sm p-4">
         
-            <h3 class="text-lg font-bold">Demo Title</h3>
-            <p class="text-gray-700 mt-1">This is descriptio for the post</p>
-            <div>
-                <button class="text-blue-600 hover:underline">Update</button>
-                <button class="text-red-600 hover:underline">Delete</button>
+            <h3 class="text-lg font-bold">{{$post->title}}</h3>
+            <p class="text-gray-700 mt-1">{{$post->content}}</p>
+            <div class="text-end">
+                <button wire:click="edit({{ $post->id }})" class="text-blue-600 hover:underline me-2">Update</button>
+                <button wire:click="delete({{ $post->id }})" onclick="return confirm('Are You Sure To Delete This Post?')" class="text-red-600 hover:underline">Delete</button>
             </div>
         </div>
+        @empty
+        <div class="alert alert-danger">No Record In the Database</div>
+            
+       @endforelse
 
     </div>
 </div>
